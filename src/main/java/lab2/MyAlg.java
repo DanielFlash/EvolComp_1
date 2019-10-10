@@ -1,8 +1,10 @@
 package lab2;
 
+import org.uncommons.maths.random.Probability;
 import org.uncommons.watchmaker.framework.*;
 import org.uncommons.watchmaker.framework.operators.EvolutionPipeline;
 import org.uncommons.watchmaker.framework.selection.RouletteWheelSelection;
+import org.uncommons.watchmaker.framework.selection.TournamentSelection;
 import org.uncommons.watchmaker.framework.termination.GenerationCount;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Random;
 
 public class MyAlg {
     public static void main(String[] args) {
-        int dimension = 10; // dimension of problem (init 2)
+        int dimension = 1000; // dimension of problem (init 2)
         int populationSize = 100; // size of population (init 10)
         int generations = 1000000; // number of generations (init 10)
 
@@ -24,12 +26,17 @@ public class MyAlg {
         operators.add(new MyMutation()); // Mutation
         EvolutionPipeline<double[]> pipeline = new EvolutionPipeline<double[]>(operators);
 
-        SelectionStrategy<Object> selection = new RouletteWheelSelection(); // Selection operator
+//        SelectionStrategy<Object> selection = new RouletteWheelSelection(); // Selection operator
+
+        SelectionStrategy<Object> selection = new TournamentSelection(Probability.ONE); // Selection operator
 
         FitnessEvaluator<double[]> evaluator = new FitnessFunction(dimension); // Fitness function
 
-        EvolutionEngine<double[]> algorithm = new SteadyStateEvolutionEngine<double[]>(
-                factory, pipeline, evaluator, selection, populationSize, false, random);
+//        EvolutionEngine<double[]> algorithm = new SteadyStateEvolutionEngine<double[]>(
+//                factory, pipeline, evaluator, selection, populationSize, false, random);
+
+        EvolutionEngine<double[]> algorithm = new GenerationalEvolutionEngine<double[]>(
+                factory, pipeline, evaluator, selection, random);
 
         algorithm.addEvolutionObserver(new EvolutionObserver() {
             public void populationUpdate(PopulationData populationData) {
